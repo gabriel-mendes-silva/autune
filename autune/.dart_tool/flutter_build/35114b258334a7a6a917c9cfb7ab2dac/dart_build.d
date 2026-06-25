@@ -1,0 +1,1 @@
+ /home/gabriel/Documentos/IFSC/DDM/autuneOficial/autune/autune/.dart_tool/flutter_build/35114b258334a7a6a917c9cfb7ab2dac/dart_build_result.json: 
