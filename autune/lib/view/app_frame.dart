@@ -1,5 +1,6 @@
+import 'package:autune/pages/afinador_page.dart';
+import 'package:autune/pages/historico_page.dart';
 import 'package:autune/pages/home_page.dart';
-import 'package:autune/pages/not_implemented_page.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:autune/view/widgets/app_fonts.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,9 +21,9 @@ class _AppFrameState extends State<AppFrame>{
   int _selectedIndex = 1;
 
   final List<Widget> pages = [
-    NotImplementedPage(),
+    const AfinadorPage(),
     HomePage(),
-    NotImplementedPage()
+    HistoricoPage(),
   ];
 
   void _onItemTapped(int index) {

@@ -1,6 +1,5 @@
-import 'package:autune/pages/cadastro_page.dart';
+import 'package:autune/routes/app_routes.dart';
 import 'package:autune/services/auth_service.dart';
-import 'package:autune/view/app_frame.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,15 +47,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const AppFrame()),
-    );
+    Navigator.of(context).pushReplacementNamed(AppRoutes.home);
   }
 
   void _irParaCadastro() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CadastroPage()),
-    );
+    Navigator.of(context).pushNamed(AppRoutes.cadastro);
   }
 
   @override

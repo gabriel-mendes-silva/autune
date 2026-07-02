@@ -12,7 +12,8 @@ class HomePage extends StatelessWidget{
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Padding(padding: EdgeInsetsGeometry.all(20),
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,6 +38,7 @@ class HomePage extends StatelessWidget{
                   ),
                 ],
               ),
+              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
                 height: 200,
@@ -78,6 +80,7 @@ class HomePage extends StatelessWidget{
 
                 ),
               ),
+              const SizedBox(height: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -92,18 +95,19 @@ class HomePage extends StatelessWidget{
                   Divider(color: AppColors.borderGreyColor),
                 ],
               ),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
+                  Expanded(
+                    child: Container(
                       height: 160,
-                      width: 175,
                       decoration: BoxDecoration(shape: BoxShape.rectangle,
                           color: Colors.white,
                           border: Border.all(color: AppColors.borderGreyColor, width: 1),
                           borderRadius: BorderRadius.circular(15)
                       ),
-                      child: Padding(padding: EdgeInsetsGeometry.only(right: 20, left: 12, top: 12, bottom: 16),child:
+                      child: Padding(padding: EdgeInsetsGeometry.only(right: 10, left: 12, top: 12, bottom: 16),child:
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -119,12 +123,15 @@ class HomePage extends StatelessWidget{
                                     borderRadius: BorderRadius.circular(15)
                                 ),
                               ),
-                              Text('Nº DE PRÁTICAS',
-                                style: TextStyle(
-                                    fontFamily: 'AlanSans',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight(500),
-                                    color: AppColors.mainColor
+                              Flexible(
+                                child: Text('Nº DE PRÁTICAS',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontFamily: 'AlanSans',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight(500),
+                                      color: AppColors.mainColor
+                                  ),
                                 ),
                               ),
                             ],),
@@ -140,15 +147,17 @@ class HomePage extends StatelessWidget{
                       ),
                       )
                   ),
-                  Container(
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
                       height: 160,
-                      width: 175,
                       decoration: BoxDecoration(shape: BoxShape.rectangle,
                           color: Colors.white,
                           border: Border.all(color: AppColors.borderGreyColor, width: 1),
                           borderRadius: BorderRadius.circular(15)
                       ),
-                      child: Padding(padding: EdgeInsetsGeometry.only(right: 20, left: 12, top: 12, bottom: 16),child:
+                      child: Padding(padding: EdgeInsetsGeometry.only(right: 10, left: 12, top: 12, bottom: 16),child:
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -164,12 +173,15 @@ class HomePage extends StatelessWidget{
                                     borderRadius: BorderRadius.circular(15)
                                 ),
                               ),
-                              Text('AFINAÇÃO GERAL',
-                                style: TextStyle(
-                                    fontFamily: 'AlanSans',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight(500),
-                                    color: AppColors.mainColor
+                              Flexible(
+                                child: Text('AFINAÇÃO GERAL',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontFamily: 'AlanSans',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight(500),
+                                      color: AppColors.mainColor
+                                  ),
                                 ),
                               ),
                             ],),
@@ -185,13 +197,15 @@ class HomePage extends StatelessWidget{
                       ),
                       )
                   )
+                  ),
                 ],
               )
 
 
 
             ],
-          )
+          ),
+          ),
       ),
     );
   }

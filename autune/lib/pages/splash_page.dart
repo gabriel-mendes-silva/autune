@@ -1,4 +1,4 @@
-import 'package:autune/pages/login_page.dart';
+import 'package:autune/routes/app_routes.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,14 +30,7 @@ class _SplashPageState extends State<SplashPage>
 
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const LoginPage(),
-          transitionsBuilder: (_, animation, __, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 600),
-        ),
-      );
+      Navigator.of(context).pushReplacementNamed(AppRoutes.login);
     });
   }
 
