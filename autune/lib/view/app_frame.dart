@@ -1,4 +1,5 @@
 import 'package:autune/pages/home_page.dart';
+import 'package:autune/pages/not_implemented_page.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:autune/view/widgets/app_fonts.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,14 +17,27 @@ class AppFrame extends StatefulWidget{
 }
 
 class _AppFrameState extends State<AppFrame>{
-  int paginaAtual = 0;
+  int _selectedIndex = 1;
+
+  final List<Widget> pages = [
+    NotImplementedPage(),
+    HomePage(),
+    NotImplementedPage()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AutuneBar(),
-      body: HomePage(),
+      body: pages.elementAt(_selectedIndex),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(
@@ -31,6 +45,9 @@ class _AppFrameState extends State<AppFrame>{
           )
         ),
         child: BottomNavigationBar(
+          onTap: _onItemTapped,
+          backgroundColor: Colors.white,
+          currentIndex: _selectedIndex,
           selectedItemColor: AppColors.mainColor,
             unselectedItemColor: AppColors.oliveBrownColor,
           selectedLabelStyle: TextStyle(
@@ -44,6 +61,8 @@ class _AppFrameState extends State<AppFrame>{
           items: [
             BottomNavigationBarItem(
                 activeIcon: Container(
+                  height: 40,
+                  width: 60,
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: AppColors.mainColor,
@@ -51,11 +70,10 @@ class _AppFrameState extends State<AppFrame>{
                   ),
                   child: SvgPicture.asset('assets/afinador-icon.svg',
                     colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                    width: 24,
+                    width: 14,
                   ),
                 ),
                 icon: SvgPicture.asset(
-
                   'assets/afinador-icon.svg',
                   colorFilter: ColorFilter.mode(AppColors.oliveBrownColor, BlendMode.srcIn),
                   width: 24,
@@ -63,6 +81,19 @@ class _AppFrameState extends State<AppFrame>{
                 label: "Afinador"
             ),
             BottomNavigationBarItem(
+                activeIcon: Container(
+                  height: 40,
+                  width: 60,
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SvgPicture.asset('assets/home-icon.svg',
+                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    width: 24,
+                  ),
+                ),
                 icon: SvgPicture.asset(
                   'assets/home-icon.svg',
                   colorFilter: ColorFilter.mode(AppColors.oliveBrownColor, BlendMode.srcIn),
@@ -70,7 +101,19 @@ class _AppFrameState extends State<AppFrame>{
                 ),
                 label: "Início"),
             BottomNavigationBarItem(
-
+                activeIcon: Container(
+                  height: 40,
+                  width: 60,
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SvgPicture.asset('assets/music-icon.svg',
+                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    width: 24,
+                  ),
+                ),
                 icon: SvgPicture.asset(
                   'assets/music-icon.svg',
                   colorFilter: ColorFilter.mode(AppColors.oliveBrownColor, BlendMode.srcIn),
@@ -121,7 +164,7 @@ class AutuneBar extends StatelessWidget implements PreferredSizeWidget{
             tooltip: 'Show Snackbar',
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('This is a snackbar')),
+                const SnackBar(content: Text('This is a neymar')),
               );
             },
           ),
@@ -145,4 +188,16 @@ class AutuneBottomBar extends StatefulWidget{
   }
 
 }
+
+class AutuneNavBarItem extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+
+}
+
+
 

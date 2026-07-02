@@ -1,4 +1,4 @@
-import 'package:autune/pages/login_page.dart';
+import 'package:autune/services/auth_service.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,6 +20,8 @@ class _CadastroPageState extends State<CadastroPage> {
 
   bool _senhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
+  bool _carregando = false;
+  String? _erro;
 
   @override
   void dispose() {
@@ -31,10 +33,43 @@ class _CadastroPageState extends State<CadastroPage> {
     super.dispose();
   }
 
-  void _cadastrar() {
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
+  Future<void> _cadastrar() async {
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
+    final erro = await AuthService.instance.cadastrar(
+      nome: _nomeController.text,
+      email: _emailController.text,
+      usuario: _usuarioController.text,
+      senha: _senhaController.text,
+      confirmarSenha: _confirmarSenhaController.text,
+    );
+
+    if (!mounted) return;
+
+    if (erro != null) {
+      setState(() {
+        _erro = erro;
+        _carregando = false;
+      });
+      return;
+    }
+
+
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Cadastro realizado! Faça seu login.',
+          style: TextStyle(fontFamily: 'AlanSans'),
+        ),
+        backgroundColor: AppColors.mainColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
@@ -52,7 +87,6 @@ class _CadastroPageState extends State<CadastroPage> {
         ),
         child: Stack(
           children: [
-            // Folhas decorativas
             Positioned(
               top: -10,
               right: -20,
@@ -61,10 +95,8 @@ class _CadastroPageState extends State<CadastroPage> {
                 child: SvgPicture.asset(
                   'assets/autune-logo.svg',
                   width: 140,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.mainColor,
-                    BlendMode.srcIn,
-                  ),
+                  colorFilter:
+                      ColorFilter.mode(AppColors.mainColor, BlendMode.srcIn),
                 ),
               ),
             ),
@@ -76,15 +108,11 @@ class _CadastroPageState extends State<CadastroPage> {
                 child: SvgPicture.asset(
                   'assets/autune-logo.svg',
                   width: 130,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.mainColor,
-                    BlendMode.srcIn,
-                  ),
+                  colorFilter:
+                      ColorFilter.mode(AppColors.mainColor, BlendMode.srcIn),
                 ),
               ),
             ),
-
-            // Conteúdo
             SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -93,20 +121,17 @@ class _CadastroPageState extends State<CadastroPage> {
                   children: [
                     const SizedBox(height: 48),
 
-                    // Logo + nome
+                    // Logo
                     Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
                             'assets/autune-logo.svg',
                             width: 36,
                             height: 36,
                             colorFilter: ColorFilter.mode(
-                              AppColors.mainColor,
-                              BlendMode.srcIn,
-                            ),
+                                AppColors.mainColor, BlendMode.srcIn),
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -124,7 +149,6 @@ class _CadastroPageState extends State<CadastroPage> {
 
                     const SizedBox(height: 44),
 
-                    // Título CADASTRO
                     Text(
                       'CADASTRO',
                       style: TextStyle(
@@ -137,42 +161,53 @@ class _CadastroPageState extends State<CadastroPage> {
                     ),
                     const SizedBox(height: 6),
                     Divider(color: AppColors.oliveBrownColor, thickness: 1),
-
                     const SizedBox(height: 20),
 
-                    // Nome completo
-                    _LabelCampo(label: 'NOME COMPLETO'),
+                    // Mensagem de erro
+                    if (_erro != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Text(
+                          _erro!,
+                          style: TextStyle(
+                            fontFamily: 'AlanSans',
+                            fontSize: 13,
+                            color: Colors.red.shade700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    _Label(texto: 'NOME COMPLETO'),
                     const SizedBox(height: 6),
-                    _CampoTexto(
-                      controller: _nomeController,
-                      obscureText: false,
-                    ),
+                    _CampoTexto(controller: _nomeController),
 
                     const SizedBox(height: 16),
 
-                    // E-mail
-                    _LabelCampo(label: 'E-MAIL'),
+                    _Label(texto: 'E-MAIL'),
                     const SizedBox(height: 6),
                     _CampoTexto(
                       controller: _emailController,
-                      obscureText: false,
                       keyboardType: TextInputType.emailAddress,
                     ),
 
                     const SizedBox(height: 16),
 
-                    // Usuário
-                    _LabelCampo(label: 'USUÁRIO'),
+                    _Label(texto: 'USUÁRIO'),
                     const SizedBox(height: 6),
-                    _CampoTexto(
-                      controller: _usuarioController,
-                      obscureText: false,
-                    ),
+                    _CampoTexto(controller: _usuarioController),
 
                     const SizedBox(height: 16),
 
-                    // Senha
-                    _LabelCampo(label: 'SENHA'),
+                    _Label(texto: 'SENHA'),
                     const SizedBox(height: 6),
                     _CampoTexto(
                       controller: _senhaController,
@@ -185,18 +220,14 @@ class _CadastroPageState extends State<CadastroPage> {
                           color: AppColors.oliveBrownColor,
                           size: 20,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _senhaVisivel = !_senhaVisivel;
-                          });
-                        },
+                        onPressed: () =>
+                            setState(() => _senhaVisivel = !_senhaVisivel),
                       ),
                     ),
 
                     const SizedBox(height: 16),
 
-                    // Confirmar senha
-                    _LabelCampo(label: 'CONFIRMAR SENHA'),
+                    _Label(texto: 'CONFIRMAR SENHA'),
                     const SizedBox(height: 6),
                     _CampoTexto(
                       controller: _confirmarSenhaController,
@@ -209,45 +240,52 @@ class _CadastroPageState extends State<CadastroPage> {
                           color: AppColors.oliveBrownColor,
                           size: 20,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _confirmarSenhaVisivel = !_confirmarSenhaVisivel;
-                          });
-                        },
+                        onPressed: () => setState(() =>
+                            _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
                       ),
                     ),
 
                     const SizedBox(height: 32),
 
-                    // Botão cadastrar
+
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: _cadastrar,
+                        onPressed: _carregando ? null : _cadastrar,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.mainColor,
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor:
+                              AppColors.mainColor.withOpacity(0.6),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'CADASTRAR',
-                          style: TextStyle(
-                            fontFamily: 'AlanSans',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
+                        child: _carregando
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'CADASTRAR',
+                                style: TextStyle(
+                                  fontFamily: 'AlanSans',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Link para login
                     Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -259,7 +297,6 @@ class _CadastroPageState extends State<CadastroPage> {
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: AppColors.oliveBrownColor,
-                              letterSpacing: 0.5,
                             ),
                           ),
                           GestureDetector(
@@ -271,7 +308,6 @@ class _CadastroPageState extends State<CadastroPage> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.mainColor,
-                                letterSpacing: 0.5,
                               ),
                             ),
                           ),
@@ -291,14 +327,14 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 }
 
-class _LabelCampo extends StatelessWidget {
-  final String label;
-  const _LabelCampo({required this.label});
+class _Label extends StatelessWidget {
+  final String texto;
+  const _Label({required this.texto});
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      label,
+      texto,
       style: TextStyle(
         fontFamily: 'AlanSans',
         fontSize: 11,
@@ -318,7 +354,7 @@ class _CampoTexto extends StatelessWidget {
 
   const _CampoTexto({
     required this.controller,
-    required this.obscureText,
+    this.obscureText = false,
     this.suffixIcon,
     this.keyboardType,
   });
@@ -338,10 +374,8 @@ class _CampoTexto extends StatelessWidget {
         filled: true,
         fillColor: Colors.white,
         suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

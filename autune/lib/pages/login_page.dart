@@ -1,4 +1,5 @@
 import 'package:autune/pages/cadastro_page.dart';
+import 'package:autune/services/auth_service.dart';
 import 'package:autune/view/app_frame.dart';
 import 'package:autune/view/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,10 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
+
   bool _senhaVisivel = false;
+  bool _carregando = false;
+  String? _erro;
 
   @override
   void dispose() {
@@ -23,16 +27,36 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _entrar() {
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const AppFrame()));
+  Future<void> _entrar() async {
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
+    final erro = await AuthService.instance.login(
+      usuario: _usuarioController.text,
+      senha: _senhaController.text,
+    );
+
+    if (!mounted) return;
+
+    if (erro != null) {
+      setState(() {
+        _erro = erro;
+        _carregando = false;
+      });
+      return;
+    }
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const AppFrame()),
+    );
   }
 
   void _irParaCadastro() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const CadastroPage()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CadastroPage()),
+    );
   }
 
   @override
@@ -50,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Stack(
           children: [
-            // Folhas decorativas no topo
             Positioned(
               top: -10,
               right: -20,
@@ -59,10 +82,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: SvgPicture.asset(
                   'assets/autune-logo.svg',
                   width: 140,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.mainColor,
-                    BlendMode.srcIn,
-                  ),
+                  colorFilter:
+                      ColorFilter.mode(AppColors.mainColor, BlendMode.srcIn),
                 ),
               ),
             ),
@@ -74,14 +95,11 @@ class _LoginPageState extends State<LoginPage> {
                 child: SvgPicture.asset(
                   'assets/autune-logo.svg',
                   width: 110,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.mainColor,
-                    BlendMode.srcIn,
-                  ),
+                  colorFilter:
+                      ColorFilter.mode(AppColors.mainColor, BlendMode.srcIn),
                 ),
               ),
             ),
-            // Folhas decorativas na base
             Positioned(
               bottom: -20,
               left: -30,
@@ -90,15 +108,11 @@ class _LoginPageState extends State<LoginPage> {
                 child: SvgPicture.asset(
                   'assets/autune-logo.svg',
                   width: 130,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.mainColor,
-                    BlendMode.srcIn,
-                  ),
+                  colorFilter:
+                      ColorFilter.mode(AppColors.mainColor, BlendMode.srcIn),
                 ),
               ),
             ),
-
-            // Conteúdo principal
             SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -107,20 +121,17 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: 48),
 
-                    // Logo + nome
+                    // Logo
                     Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
                             'assets/autune-logo.svg',
                             width: 36,
                             height: 36,
                             colorFilter: ColorFilter.mode(
-                              AppColors.mainColor,
-                              BlendMode.srcIn,
-                            ),
+                                AppColors.mainColor, BlendMode.srcIn),
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -138,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 56),
 
-                    // Título LOG IN
                     Text(
                       'LOG IN',
                       style: TextStyle(
@@ -151,39 +161,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 6),
                     Divider(color: AppColors.oliveBrownColor, thickness: 1),
-
                     const SizedBox(height: 24),
 
-                    // Campo usuário
-                    Text(
-                      'USUÁRIO',
-                      style: TextStyle(
-                        fontFamily: 'AlanSans',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.oliveBrownColor,
-                        letterSpacing: 1.1,
+
+                    if (_erro != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Text(
+                          _erro!,
+                          style: TextStyle(
+                            fontFamily: 'AlanSans',
+                            fontSize: 13,
+                            color: Colors.red.shade700,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                    ],
+
+
+                    _Label(texto: 'USUÁRIO'),
                     const SizedBox(height: 6),
-                    _CampoTexto(
-                      controller: _usuarioController,
-                      obscureText: false,
-                    ),
+                    _CampoTexto(controller: _usuarioController),
 
                     const SizedBox(height: 20),
 
-                    // Campo senha
-                    Text(
-                      'SENHA',
-                      style: TextStyle(
-                        fontFamily: 'AlanSans',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.oliveBrownColor,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
+
+                    _Label(texto: 'SENHA'),
                     const SizedBox(height: 6),
                     _CampoTexto(
                       controller: _senhaController,
@@ -196,15 +207,11 @@ class _LoginPageState extends State<LoginPage> {
                           color: AppColors.oliveBrownColor,
                           size: 20,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _senhaVisivel = !_senhaVisivel;
-                          });
-                        },
+                        onPressed: () =>
+                            setState(() => _senhaVisivel = !_senhaVisivel),
                       ),
                     ),
 
-                    // Esqueci minha senha
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -221,7 +228,6 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: AppColors.oliveBrownColor,
-                            letterSpacing: 0.8,
                           ),
                         ),
                       ),
@@ -229,35 +235,44 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 28),
 
-                    // Botão entrar
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: _entrar,
+                        onPressed: _carregando ? null : _entrar,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.mainColor,
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor:
+                              AppColors.mainColor.withOpacity(0.6),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'ENTRAR',
-                          style: TextStyle(
-                            fontFamily: 'AlanSans',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
+                        child: _carregando
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'ENTRAR',
+                                style: TextStyle(
+                                  fontFamily: 'AlanSans',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Link para cadastro
                     Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -269,7 +284,6 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: AppColors.oliveBrownColor,
-                              letterSpacing: 0.5,
                             ),
                           ),
                           GestureDetector(
@@ -281,7 +295,6 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.mainColor,
-                                letterSpacing: 0.5,
                               ),
                             ),
                           ),
@@ -299,15 +312,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+class _Label extends StatelessWidget {
+  final String texto;
+  const _Label({required this.texto});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      texto,
+      style: TextStyle(
+        fontFamily: 'AlanSans',
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.oliveBrownColor,
+        letterSpacing: 1.1,
+      ),
+    );
+  }
+}
+
 class _CampoTexto extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
+  final TextInputType? keyboardType;
 
   const _CampoTexto({
     required this.controller,
-    required this.obscureText,
+    this.obscureText = false,
     this.suffixIcon,
+    this.keyboardType,
   });
 
   @override
@@ -315,6 +349,7 @@ class _CampoTexto extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      keyboardType: keyboardType,
       style: const TextStyle(
         fontFamily: 'AlanSans',
         fontSize: 15,
@@ -324,10 +359,8 @@ class _CampoTexto extends StatelessWidget {
         filled: true,
         fillColor: Colors.white,
         suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
